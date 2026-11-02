@@ -4,4 +4,4 @@ git init -->git initilize
 
 git status -->check the files status
 git add * --> for add files in staging area
-git coomit-m "message" --> final changes commit
+git commit-m "message" --> final changes commit
