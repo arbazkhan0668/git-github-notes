@@ -32,7 +32,7 @@ git push
 ```
 
 For a new GitHub repository, add its remote URL and set the upstream branch as prompted by GitHub. Replace example names and URLs with your own; do not copy personal repository URLs from example notes.
-
+![](initial_steps.png)
 ## Keep Credentials Private
 
 Never commit passwords, access tokens, private keys, or other secrets. Use `.gitignore` for local files that should not be tracked, and check `git status` before committing.
