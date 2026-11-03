@@ -1,4 +1,4 @@
-# Git & GitHub Tutorial Notes
+# Git & GitHub Tutorial Notes 
 
 This repository collects learning materials and reference notes for practicing Git and GitHub, from initial setup through collaboration and more advanced workflows.
 
