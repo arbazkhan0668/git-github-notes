@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#f4f5ef">
+	<title>Git &amp; GitHub Field Notes</title>
+	<style>
+		:root {
+			color-scheme: light;
+			--paper: #f4f5ef;
+			--white: #fffefa;
+			--ink: #19221e;
+			--muted: #64716a;
+			--line: #d7ddd4;
+			--forest: #164b3b;
+			--forest-dark: #10382d;
+			--lime: #d7f36a;
+			--coral: #e55b42;
+			--blue: #3158d5;
+			--code: #17231e;
+			--mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+			--serif: Georgia, "Times New Roman", serif;
+			--sans: "Aptos", "Segoe UI", sans-serif;
+		}
+
+		* { box-sizing: border-box; }
+		body {
+			margin: 0;
+			background-color: var(--paper);
+			background-image: radial-gradient(#cbd3c9 0.65px, transparent 0.65px);
+			background-size: 15px 15px;
+			color: var(--ink);
+			font-family: var(--sans);
+			font-size: 15px;
+		}
+		button, input { font: inherit; }
+		button { cursor: pointer; }
+		a { color: inherit; }
+		.topbar {
+			min-height: 76px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 24px;
+			padding: 14px clamp(18px, 4vw, 58px);
+			border-bottom: 1px solid var(--line);
+			background: rgba(255, 254, 250, .96);
+		}
+		.brand { display: flex; align-items: center; gap: 12px; min-width: max-content; }
+		.brand-mark {
+			width: 38px;
+			height: 38px;
+			display: grid;
+			place-items: center;
+			background: var(--lime);
+			border: 1px solid var(--ink);
+			color: var(--forest-dark);
+			font: 800 17px var(--mono);
+			transform: rotate(-4deg);
+		}
+		.brand-name { font: 700 16px var(--serif); letter-spacing: 0; }
+		.brand-sub { margin-top: 3px; color: var(--muted); font: 10px var(--mono); letter-spacing: 0; text-transform: uppercase; }
+		.top-links { display: flex; align-items: center; gap: 22px; }
+		.top-links a { color: var(--muted); font-size: 13px; text-decoration: none; }
+		.top-links a:hover { color: var(--forest); text-decoration: underline; }
+		.course-tag {
+			padding: 8px 11px;
+			background: var(--forest);
+			color: white;
+			font: 10px var(--mono);
+			letter-spacing: 0;
+			text-transform: uppercase;
+		}
+
+		.shell { max-width: 1540px; margin: 0 auto; padding: 34px clamp(16px, 3.2vw, 48px) 64px; }
+		.intro { display: flex; justify-content: space-between; align-items: end; gap: 28px; margin-bottom: 28px; }
+		.eyebrow { color: var(--coral); font: 700 11px var(--mono); letter-spacing: 0; text-transform: uppercase; }
+		h1 { max-width: 760px; margin: 8px 0 8px; font: 400 clamp(34px, 4vw, 54px)/1.04 var(--serif); letter-spacing: 0; }
+		.intro p { max-width: 650px; margin: 0; color: var(--muted); line-height: 1.65; }
+		.progress-block { width: 192px; flex: 0 0 192px; padding-bottom: 5px; }
+		.progress-copy { display: flex; justify-content: space-between; margin-bottom: 9px; color: var(--muted); font: 10px var(--mono); text-transform: uppercase; }
+		.progress-track { height: 6px; background: #dce1d8; }
+		.progress-fill { width: 14%; height: 100%; background: var(--coral); transition: width .3s ease; }
+
+		.workspace { display: grid; grid-template-columns: 220px minmax(0, 1fr) 316px; gap: 26px; align-items: start; }
+		.lesson-rail, .command-rail { min-width: 0; }
+		.rail-heading { margin: 0 0 12px; color: var(--muted); font: 10px var(--mono); text-transform: uppercase; }
+		.lesson-list { display: grid; gap: 4px; }
+		.lesson-link {
+			width: 100%;
+			display: grid;
+			grid-template-columns: 28px 1fr;
+			gap: 9px;
+			align-items: start;
+			padding: 11px 9px;
+			border: 0;
+			border-left: 2px solid transparent;
+			background: transparent;
+			color: var(--muted);
+			text-align: left;
+		}
+		.lesson-link:hover { background: rgba(255, 254, 250, .74); color: var(--ink); }
+		.lesson-link[aria-current="step"] { border-left-color: var(--coral); background: var(--white); color: var(--ink); }
+		.lesson-number { padding-top: 1px; color: #8a958d; font: 11px var(--mono); }
+		.lesson-link[aria-current="step"] .lesson-number { color: var(--coral); }
+		.lesson-name { font-size: 13px; font-weight: 650; line-height: 1.35; }
+		.rail-note { margin: 24px 0 0; padding: 14px 0 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; line-height: 1.6; }
+
+		.lesson-page { min-width: 0; padding: 30px clamp(20px, 3vw, 42px) 38px; border: 1px solid var(--line); background: var(--white); }
+		.lesson-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font: 10px var(--mono); text-transform: uppercase; }
+		.lesson-meta span:first-child { color: var(--forest); }
+		h2 { margin: 16px 0 12px; font: 400 clamp(30px, 3.3vw, 43px)/1.08 var(--serif); letter-spacing: 0; }
+		.lesson-lead { max-width: 760px; margin: 0; color: #59665f; font-size: 16px; line-height: 1.7; }
+		.flow-figure { margin: 28px 0 30px; padding: 18px 20px 16px; background: #edf2e8; border-top: 2px solid var(--forest); }
+		.flow-label { margin-bottom: 15px; color: var(--muted); font: 10px var(--mono); text-transform: uppercase; }
+		.flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+		.flow-step { position: relative; min-width: 0; }
+		.flow-step:not(:last-child)::after { content: ""; position: absolute; top: 16px; left: calc(100% + 5px); width: 10px; height: 1px; background: #8ba294; }
+		.flow-node { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid var(--forest); border-radius: 50%; background: var(--white); color: var(--forest); font: 12px var(--mono); }
+		.flow-step:nth-child(2) .flow-node { background: var(--lime); }
+		.flow-step:nth-child(4) .flow-node { background: var(--forest); color: white; }
+		.flow-step strong { display: block; margin-top: 8px; font-size: 12px; }
+		.flow-step small { display: block; margin-top: 3px; color: var(--muted); font: 10px var(--mono); }
+		.sections { display: grid; gap: 0; }
+		.topic { display: grid; grid-template-columns: minmax(120px, .34fr) 1fr; gap: 20px; padding: 18px 0; border-top: 1px solid var(--line); }
+		.topic h3 { margin: 2px 0 0; font: 400 20px var(--serif); }
+		.topic p { margin: 0 0 12px; color: #55625b; font-size: 13px; line-height: 1.65; }
+		.codebox { position: relative; overflow: hidden; background: var(--code); color: #f1f5ea; }
+		.codebox pre { overflow-x: auto; margin: 0; padding: 13px 15px; font: 12px/1.7 var(--mono); white-space: pre; }
+		.copy-button {
+			position: absolute;
+			top: 7px;
+			right: 7px;
+			padding: 5px 8px;
+			border: 1px solid #53635a;
+			background: #25352d;
+			color: #f1f5ea;
+			font: 10px var(--mono);
+		}
+		.copy-button:hover { border-color: var(--lime); color: var(--lime); }
+		.caution { margin-top: 20px; padding: 14px 16px; border-left: 3px solid var(--coral); background: #fff1eb; color: #604338; font-size: 12px; line-height: 1.65; }
+		.resource-links { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--line); }
+		.resource-links a { color: var(--blue); font-size: 12px; text-underline-offset: 3px; }
+
+		.command-rail { display: grid; gap: 20px; }
+		.lab { overflow: hidden; border: 1px solid #264539; background: var(--forest-dark); color: white; }
+		.lab-head { padding: 17px 17px 13px; border-bottom: 1px solid #365849; }
+		.lab-kicker { color: var(--lime); font: 10px var(--mono); text-transform: uppercase; }
+		.lab-title { margin: 7px 0 4px; font: 400 22px var(--serif); }
+		.lab-desc { margin: 0; color: #c4d2c8; font-size: 11px; line-height: 1.5; }
+		.lab-progress { display: flex; gap: 5px; padding: 13px 17px 0; }
+		.lab-progress i { height: 3px; flex: 1; background: #476254; }
+		.lab-progress i.done { background: var(--lime); }
+		.terminal { min-height: 132px; max-height: 220px; overflow: auto; padding: 12px 17px; color: #dbe8dc; font: 11px/1.65 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+		.terminal .prompt { color: var(--lime); }
+		.lab-controls { display: flex; gap: 8px; padding: 0 17px 17px; }
+		.run-button, .reset-button { min-height: 36px; border: 0; font-size: 11px; font-weight: 700; }
+		.run-button { flex: 1; background: var(--lime); color: var(--forest-dark); }
+		.run-button:hover { background: #e6ff91; }
+		.reset-button { padding: 0 10px; background: #365849; color: white; }
+		.reset-button:hover { background: #496d59; }
+		.lab-foot { padding: 11px 17px; border-top: 1px solid #365849; color: #c4d2c8; font-size: 10px; line-height: 1.5; }
+
+		.reference { padding: 17px; border: 1px solid var(--line); background: rgba(255, 254, 250, .9); }
+		.reference-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+		.reference h3 { margin: 0; font: 400 20px var(--serif); }
+		.reference-count { color: var(--muted); font: 10px var(--mono); }
+		.search-wrap { position: relative; margin-bottom: 9px; }
+		.search-wrap label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
+		.search-wrap input { width: 100%; min-height: 36px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 0; background: white; color: var(--ink); font-size: 12px; }
+		.search-wrap input:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
+		.command-list { display: grid; max-height: 270px; overflow: auto; }
+		.command-item { display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: center; padding: 10px 0; border-top: 1px solid #e6e9e3; }
+		.command-name { display: block; color: var(--forest); font: 11px var(--mono); overflow-wrap: anywhere; }
+		.command-description { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; line-height: 1.4; }
+		.command-copy { min-width: 44px; padding: 6px 7px; border: 1px solid var(--line); background: transparent; color: var(--ink); font: 10px var(--mono); }
+		.command-copy:hover { border-color: var(--forest); color: var(--forest); }
+		.empty-state { padding: 14px 0; color: var(--muted); font-size: 12px; }
+		.footer-note { margin-top: 25px; color: var(--muted); font: 10px var(--mono); text-align: center; }
+
+		@media (max-width: 1120px) {
+			.workspace { grid-template-columns: 190px minmax(0, 1fr); }
+			.command-rail { grid-column: 2; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+			.command-list { max-height: 230px; }
+		}
+		@media (max-width: 720px) {
+			.topbar { flex-wrap: wrap; gap: 12px; padding: 12px 16px; }
+			.top-links { gap: 14px; }
+			.top-links a { font-size: 11px; }
+			.course-tag { margin-left: auto; }
+			.shell { padding: 25px 14px 40px; }
+			.intro { display: block; }
+			.progress-block { width: 100%; margin-top: 19px; }
+			.workspace { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+			.lesson-rail { overflow: hidden; }
+			.lesson-list { display: flex; overflow-x: auto; padding-bottom: 5px; }
+			.lesson-link { min-width: 150px; border-left: 0; border-bottom: 2px solid transparent; }
+			.lesson-link[aria-current="step"] { border-bottom-color: var(--coral); }
+			.rail-note { display: none; }
+			.lesson-page { padding: 23px 18px 28px; }
+			.topic { grid-template-columns: 1fr; gap: 8px; }
+			.flow-figure { padding: 15px 12px; }
+			.flow { gap: 10px; }
+			.flow-step:not(:last-child)::after { left: calc(100% + 1px); width: 8px; }
+			.flow-step strong { font-size: 10px; }
+			.flow-step small { font-size: 9px; }
+			.command-rail { grid-column: auto; grid-template-columns: 1fr; }
+			.course-tag { font-size: 9px; }
+		}
+		@media (prefers-reduced-motion: reduce) {
+			*, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+		}
+	</style>
+</head>
+<body>
+	<header class="topbar">
+		<a class="brand" href="#top" aria-label="Git and GitHub Field Notes home">
+			<span class="brand-mark" aria-hidden="true">G/</span>
+			<span><span class="brand-name">Field Notes</span><span class="brand-sub">Git + GitHub tutorial</span></span>
+		</a>
+		<nav class="top-links" aria-label="Reference materials">
+			<a href="0.Git_GitHub_Mastery_Syllabus.md">Syllabus</a>
+			<a href="git_commands.txt">Command notes</a>
+		</nav>
+		<span class="course-tag">Beginner to advanced</span>
+	</header>
+
+	<main class="shell" id="top">
+		<section class="intro" aria-labelledby="page-title">
+			<div>
+				<div class="eyebrow">A hands-on version control guide</div>
+				<h1 id="page-title">Make your work traceable.</h1>
+				<p>Learn the Git habits behind clear history, confident experiments, and collaborative work on GitHub.</p>
+			</div>
+			<div class="progress-block" aria-label="Course progress">
+				<div class="progress-copy"><span>Learning path</span><span id="progress-label">01 / 07</span></div>
+				<div class="progress-track"><div class="progress-fill" id="course-progress"></div></div>
+			</div>
+		</section>
+
+		<div class="workspace">
+			<aside class="lesson-rail" aria-label="Tutorial lessons">
+				<h2 class="rail-heading">Course index</h2>
+				<nav class="lesson-list" id="lesson-list"></nav>
+				<p class="rail-note">Small, understandable commits make a project easier to review, share, and recover.</p>
+			</aside>
+
+			<article class="lesson-page" id="lesson-content" aria-live="polite"></article>
+
+			<aside class="command-rail" aria-label="Practice and command reference">
+				<section class="lab" aria-labelledby="lab-title">
+					<div class="lab-head">
+						<div class="lab-kicker">Interactive demo · simulated</div>
+						<h2 class="lab-title" id="lab-title">Publish your first change</h2>
+						<p class="lab-desc">Walk a sample README from your computer to a GitHub remote. No real commands are run.</p>
+					</div>
+					<div class="lab-progress" id="lab-progress" aria-label="Demo progress"></div>
+					<div class="terminal" id="terminal-output" role="log" aria-live="polite"><span class="prompt">$</span> Ready when you are. Start with a local repository.</div>
+					<div class="lab-controls">
+						<button class="run-button" id="run-step" type="button">Run next step</button>
+						<button class="reset-button" id="reset-lab" type="button">Reset</button>
+					</div>
+					<div class="lab-foot" id="lab-step-label">Step 0 of 6 · Initialize the local repository</div>
+				</section>
+
+				<section class="reference" aria-labelledby="reference-title">
+					<div class="reference-head">
+						<h3 id="reference-title">Command index</h3>
+						<span class="reference-count" id="reference-count">0 commands</span>
+					</div>
+					<div class="search-wrap">
+						<label for="command-search">Search Git commands</label>
+						<input id="command-search" type="search" placeholder="Find a command..." autocomplete="off">
+					</div>
+					<div class="command-list" id="command-list"></div>
+				</section>
+			</aside>
+		</div>
+
+		<p class="footer-note">Practice in a test repository before using unfamiliar commands on important work.</p>
+	</main>
+
+	<script>
+		const lessons = [
+			{
+				title: "The Git loop",
+				category: "01 / Foundations",
+				heading: "A history you can trust.",
+				lead: "Git records snapshots of your project. You choose what goes into each snapshot, then share those commits with a remote such as GitHub.",
+				topics: [
+					{ title: "Three places", text: "Your working directory is where you edit. The staging area is your shortlist for the next snapshot. The repository stores committed history." },
+					{ title: "A repeatable rhythm", text: "Inspect your changes, stage a focused set, commit with a useful message, then push when you are ready to share." }
+				],
+				caution: "GitHub is a hosting and collaboration service. Git is the version control system that also works locally, without an internet connection."
+			},
+			{
+				title: "Install & configure",
+				category: "02 / First setup",
+				heading: "Set your commit identity.",
+				lead: "Git stores an author name and email with each commit. Set these once on a personal machine, then verify the values before your first commit.",
+				topics: [
+					{ title: "Configure identity", text: "Global settings apply to your user account on this computer. Use the email address you want associated with your commits.", code: 'git config --global user.name "Your Name"\ngit config --global user.email "you@example.com"' },
+					{ title: "Check the settings", text: "Review the active configuration. Avoid sharing the full output publicly if it contains personal details.", code: "git config --list" }
+				],
+				caution: "Account credentials are separate from commit identity. Never put passwords or access tokens in Git commands, notes, or commits."
+			},
+			{
+				title: "Save a snapshot",
+				category: "03 / Local workflow",
+				heading: "Commit changes with intent.",
+				lead: "A commit is a named snapshot. Review what changed first, stage only the files that belong together, and write a message that explains the change.",
+				topics: [
+					{ title: "Inspect", text: "Check your current branch and working tree. Review unstaged edits before choosing what to record.", code: "git status\ngit diff" },
+					{ title: "Stage & commit", text: "Stage one file or a deliberate group, then save that staged snapshot in local history.", code: 'git add README.md\ngit diff --staged\ngit commit -m "Add project notes"' }
+				],
+				caution: "`git add .` stages all changes under the current directory. Check `git status` so generated files or secrets do not slip in."
+			},
+			{
+				title: "Branch & merge",
+				category: "04 / Safe experiments",
+				heading: "Try ideas on a branch.",
+				lead: "A branch gives a line of work its own name. Build a feature without disturbing the default branch, then merge it when it is ready.",
+				topics: [
+					{ title: "Start isolated work", text: "Create a branch and switch to it in one step. Commit related changes on that branch as you work.", code: "git switch -c feature/tutorial-notes\ngit status" },
+					{ title: "Bring work together", text: "Switch to the branch that should receive the work, then merge the completed branch. Resolve any conflicts in the affected files before committing.", code: "git switch main\ngit merge feature/tutorial-notes" }
+				],
+				caution: "A merge conflict means Git needs your choice about overlapping edits. Resolve the file content, then stage and commit the resolution."
+			},
+			{
+				title: "Connect GitHub",
+				category: "05 / Remote repositories",
+				heading: "Share a local repository.",
+				lead: "A remote is a named address for another copy of a repository. Add your own GitHub repository URL, then push a branch to publish its commits.",
+				topics: [
+					{ title: "Name the remote", text: "`origin` is a common name for the primary remote. Substitute the URL shown for your own GitHub repository.", code: "git remote add origin <your-repository-url>\ngit remote -v" },
+					{ title: "Publish a branch", text: "Set the upstream on the first push. Later pushes from this branch can usually use `git push`.", code: "git branch -M main\ngit push -u origin main" }
+				],
+				caution: "A public remote URL is not a credential. Do not place access tokens in remote URLs, screenshots, or shared notes."
+			},
+			{
+				title: "Collaborate",
+				category: "06 / Team workflow",
+				heading: "Review before merging.",
+				lead: "GitHub adds pull requests, code review, issues, and project coordination around Git branches. A pull request is a place to discuss a proposed change before merging it.",
+				topics: [
+					{ title: "Sync your branch", text: "Fetch downloads remote history without merging it. Pull fetches and integrates updates into the current branch; inspect your status before syncing.", code: "git fetch origin\ngit pull origin main" },
+					{ title: "Open a pull request", text: "Push a focused feature branch, describe the change, and request review. Address feedback with follow-up commits, then merge through the repository's agreed process.", code: "git switch -c feature/search\ngit push -u origin feature/search" }
+				],
+				caution: "Agree on a team workflow before changing shared history. Avoid force-pushing branches other people depend on."
+			},
+			{
+				title: "Undo & maintain",
+				category: "07 / Advanced habits",
+				heading: "Choose the right recovery.",
+				lead: "Git has different tools for edits, staged files, and committed history. Prefer an undo operation whose effect you understand, especially on shared work.",
+				topics: [
+					{ title: "Discard carefully", text: "Restore a file to its last committed version. This discards its uncommitted edits, so inspect or back them up first.", code: "git diff\ngit restore <file>" },
+					{ title: "Undo a shared commit", text: "Revert adds a new commit that reverses an earlier one, preserving the existing history for collaborators.", code: "git revert <commit>" },
+					{ title: "Keep work temporarily", text: "Stash saves uncommitted changes out of the way so you can switch tasks, then bring them back.", code: "git stash\ngit stash pop" }
+				],
+				caution: "Commands such as `git reset --hard` and `git clean -f` can permanently discard local work. Do not run them unless you understand exactly what will be removed."
+			}
+		];
+
+		const commands = [
+			["git status", "Show the current branch and working tree state."],
+			["git diff", "Review unstaged file changes."],
+			["git add <file>", "Stage a file for the next commit."],
+			["git diff --staged", "Review what is staged."],
+			["git commit -m \"message\"", "Save staged changes as a commit."],
+			["git log --oneline", "View a compact commit history."],
+			["git switch -c <branch>", "Create and switch to a branch."],
+			["git merge <branch>", "Merge a branch into the current branch."],
+			["git remote -v", "List configured remotes."],
+			["git fetch origin", "Download remote updates without integrating them."],
+			["git pull", "Fetch and integrate updates for the current branch."],
+			["git push", "Publish local commits to the configured remote."],
+			["git revert <commit>", "Create a new commit that reverses a commit."],
+			["git stash", "Temporarily store uncommitted changes."]
+		];
+
+		const demoSteps = [
+			{ command: "git init", output: "Initialized empty Git repository in /tutorial-demo/.git/" },
+			{ command: "git status", output: "On branch main\n\nNo commits yet\n\nUntracked files: README.md" },
+			{ command: "git add README.md", output: "README.md staged for the next commit." },
+			{ command: 'git commit -m "Add tutorial notes"', output: "[main (root-commit) a1b2c3d] Add tutorial notes\n 1 file changed, 1 insertion(+)" },
+			{ command: "git remote add origin <your-repository-url>", output: "Remote 'origin' added. Replace the placeholder with your GitHub repository URL." },
+			{ command: "git push -u origin main", output: "Branch 'main' set up to track 'origin/main'.\nYour first commit is now on GitHub." }
+		];
+
+		let activeLesson = 0;
+		let demoPosition = 0;
+		const lessonList = document.querySelector("#lesson-list");
+		const lessonContent = document.querySelector("#lesson-content");
+		const commandList = document.querySelector("#command-list");
+		const terminalOutput = document.querySelector("#terminal-output");
+
+		function renderLessons() {
+			lessonList.innerHTML = lessons.map((lesson, index) => `
+				<button class="lesson-link" type="button" data-lesson="${index}" aria-current="${index === activeLesson ? "step" : "false"}">
+					<span class="lesson-number">${String(index + 1).padStart(2, "0")}</span>
+					<span class="lesson-name">${lesson.title}</span>
+				</button>`).join("");
+			lessonList.querySelectorAll("[data-lesson]").forEach(button => {
+				button.addEventListener("click", () => {
+					activeLesson = Number(button.dataset.lesson);
+					renderLessons();
+					renderLesson();
+					updateCourseProgress();
+				});
+			});
+		}
+
+		function renderLesson() {
+			const lesson = lessons[activeLesson];
+			const topics = lesson.topics.map(topic => `
+				<section class="topic">
+					<h3>${topic.title}</h3>
+					<div><p>${topic.text}</p>${topic.code ? `<div class="codebox"><pre><code>${escapeHtml(topic.code)}</code></pre><button class="copy-button" type="button" data-copy="${encodeURIComponent(topic.code)}">Copy</button></div>` : ""}</div>
+				</section>`).join("");
+			lessonContent.innerHTML = `
+				<div class="lesson-meta"><span>${lesson.category}</span><span>${String(activeLesson + 1).padStart(2, "0")} / ${String(lessons.length).padStart(2, "0")}</span></div>
+				<h2>${lesson.heading}</h2>
+				<p class="lesson-lead">${lesson.lead}</p>
+				<figure class="flow-figure" aria-label="Git change workflow from working directory to GitHub">
+					<figcaption class="flow-label">A change travels through four checkpoints</figcaption>
+					<div class="flow">
+						<div class="flow-step"><span class="flow-node">01</span><strong>Working tree</strong><small>edit files</small></div>
+						<div class="flow-step"><span class="flow-node">02</span><strong>Staging area</strong><small>git add</small></div>
+						<div class="flow-step"><span class="flow-node">03</span><strong>Local history</strong><small>git commit</small></div>
+						<div class="flow-step"><span class="flow-node">04</span><strong>GitHub</strong><small>git push</small></div>
+					</div>
+				</figure>
+				<div class="sections">${topics}</div>
+				<div class="caution">${lesson.caution}</div>
+				<div class="resource-links"><a href="0.Git_GitHub_Mastery_Syllabus.md">Open the full syllabus</a><a href="git_commands.txt">Open class command notes</a></div>`;
+			lessonContent.querySelectorAll("[data-copy]").forEach(button => {
+				button.addEventListener("click", () => copyText(decodeURIComponent(button.dataset.copy), button));
+			});
+		}
+
+		function renderCommands(filter = "") {
+			const matching = commands.filter(([name, description]) => `${name} ${description}`.toLowerCase().includes(filter.toLowerCase()));
+			document.querySelector("#reference-count").textContent = `${matching.length} command${matching.length === 1 ? "" : "s"}`;
+			commandList.innerHTML = matching.length ? matching.map(([name, description]) => `
+				<div class="command-item">
+					<div><span class="command-name">${escapeHtml(name)}</span><span class="command-description">${description}</span></div>
+					<button class="command-copy" type="button" data-command="${encodeURIComponent(name)}">Copy</button>
+				</div>`).join("") : `<p class="empty-state">No matching commands.</p>`;
+			commandList.querySelectorAll("[data-command]").forEach(button => {
+				button.addEventListener("click", () => copyText(decodeURIComponent(button.dataset.command), button));
+			});
+		}
+
+		function renderDemoProgress() {
+			document.querySelector("#lab-progress").innerHTML = demoSteps.map((_, index) => `<i class="${index < demoPosition ? "done" : ""}"></i>`).join("");
+			const next = demoSteps[demoPosition];
+			document.querySelector("#lab-step-label").textContent = next
+				? `Step ${demoPosition} of ${demoSteps.length} · ${demoLabels[demoPosition]}`
+				: `Complete · ${demoSteps.length} steps`;
+			document.querySelector("#run-step").textContent = next ? "Run next step" : "Demo complete";
+			document.querySelector("#run-step").disabled = !next;
+			document.querySelector("#run-step").style.opacity = next ? "1" : ".65";
+		}
+
+		const demoLabels = ["Initialize the local repository", "Inspect the new project", "Stage the README", "Save the first snapshot", "Connect a GitHub remote", "Publish the main branch"];
+
+		document.querySelector("#run-step").addEventListener("click", () => {
+			const step = demoSteps[demoPosition];
+			if (!step) return;
+			const line = document.createElement("div");
+			line.innerHTML = `<span class="prompt">$</span> ${escapeHtml(step.command)}<br>${escapeHtml(step.output)}`;
+			terminalOutput.append(line);
+			terminalOutput.scrollTop = terminalOutput.scrollHeight;
+			demoPosition += 1;
+			renderDemoProgress();
+		});
+
+		document.querySelector("#reset-lab").addEventListener("click", () => {
+			demoPosition = 0;
+			terminalOutput.innerHTML = `<span class="prompt">$</span> Ready when you are. Start with a local repository.`;
+			renderDemoProgress();
+		});
+
+		document.querySelector("#command-search").addEventListener("input", event => renderCommands(event.target.value.trim()));
+
+		function updateCourseProgress() {
+			document.querySelector("#progress-label").textContent = `${String(activeLesson + 1).padStart(2, "0")} / ${String(lessons.length).padStart(2, "0")}`;
+			document.querySelector("#course-progress").style.width = `${((activeLesson + 1) / lessons.length) * 100}%`;
+		}
+
+		async function copyText(text, button) {
+			const original = button.textContent;
+			try {
+				await navigator.clipboard.writeText(text);
+				button.textContent = "Copied";
+			} catch {
+				button.textContent = "Select text";
+			}
+			window.setTimeout(() => { button.textContent = original; }, 1300);
+		}
+
+		function escapeHtml(value) {
+			return value.replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[character]);
+		}
+
+		renderLessons();
+		renderLesson();
+		renderCommands();
+		renderDemoProgress();
+		updateCourseProgress();
+	</script>
+</body>
+</html>
